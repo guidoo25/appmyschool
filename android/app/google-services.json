@@ -1,0 +1,130 @@
+{
+  "project_info": {
+    "project_number": "310564396725",
+    "firebase_url": "https://myschoolapp-73bd1.firebaseio.com",
+    "project_id": "myschoolapp-73bd1",
+    "storage_bucket": "myschoolapp-73bd1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:310564396725:android:4b32beee738bc904",
+        "android_client_info": {
+          "package_name": "com.ionicframework.myapp2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "310564396725-5c3p78uposcj9nl8n3vdva80n7b9k8eo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ionicframework.myapp2",
+            "certificate_hash": "c3bda436d64165dc1b942c2337d0d683a5a567d3"
+          }
+        },
+        {
+          "client_id": "310564396725-tb0c530ujd38cb07st5c03v3oo5h7olr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-gSmVVi-Rxt1g22k0wdXtrsEKBR9DzPQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "310564396725-tb0c530ujd38cb07st5c03v3oo5h7olr.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "310564396725-l8r3jeg25da1h46s94bcobsb12tjp2kn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "cl.erpsystems.msapp",
+                "app_store_id": "001001"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:310564396725:android:9abbca85273b7250",
+        "android_client_info": {
+          "package_name": "com.myschool.msfinal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "310564396725-tb0c530ujd38cb07st5c03v3oo5h7olr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-gSmVVi-Rxt1g22k0wdXtrsEKBR9DzPQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "310564396725-tb0c530ujd38cb07st5c03v3oo5h7olr.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "310564396725-l8r3jeg25da1h46s94bcobsb12tjp2kn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "cl.erpsystems.msapp",
+                "app_store_id": "001001"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:310564396725:android:91d42e5224abe9556428fc",
+        "android_client_info": {
+          "package_name": "com.myschoolcl.appmyschool"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "310564396725-tb0c530ujd38cb07st5c03v3oo5h7olr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-gSmVVi-Rxt1g22k0wdXtrsEKBR9DzPQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "310564396725-tb0c530ujd38cb07st5c03v3oo5h7olr.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "310564396725-l8r3jeg25da1h46s94bcobsb12tjp2kn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "cl.erpsystems.msapp",
+                "app_store_id": "001001"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

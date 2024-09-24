@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>310564396725-5c3p78uposcj9nl8n3vdva80n7b9k8eo.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAnkCR79qxRBqSu5zQSPaxYcsRsxWwZ8fY</string>
+	<key>GCM_SENDER_ID</key>
+	<string>310564396725</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.appmyschool</string>
+	<key>PROJECT_ID</key>
+	<string>myschoolapp-73bd1</string>
+	<key>STORAGE_BUCKET</key>
+	<string>myschoolapp-73bd1.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:310564396725:ios:ab00aeaa329b737f6428fc</string>
+	<key>DATABASE_URL</key>
+	<string>https://myschoolapp-73bd1.firebaseio.com</string>
+</dict>
+</plist>
