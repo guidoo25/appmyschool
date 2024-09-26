@@ -1,171 +1,147 @@
-// import 'dart:io';
-// import 'package:flutter/material.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
+import 'package:appmyschool/providers/cubit/notifications_loaded_cubit.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart'; // Asegúrate de tener esta dependencia en tu pubspec.yaml
+import 'package:shared_preferences/shared_preferences.dart';
 
-// class WebViewScreen extends StatefulWidget {
-//   const WebViewScreen({Key? key}) : super(key: key);
+class WebViewExample extends StatefulWidget {
+  const WebViewExample({super.key});
 
-//   @override
-//   _WebViewScreenState createState() => _WebViewScreenState();
-// }
+  @override
+  _WebViewExampleState createState() => _WebViewExampleState();
+}
 
-// class _WebViewScreenState extends State<WebViewScreen> {
-//   Future<WebViewController>? _controllerFuture;
-//   late String loginUrl;
-//   final String homeUrl = 'https://www.myschool.cl/ams_home.php?usr=';
-//   bool _isLoading = true;
-//   int progress = 0;
+class _WebViewExampleState extends State<WebViewExample> {
+  late InAppWebViewController _webViewController;
+  late CookieManager _cookieManager;
+  final String loginUrl = 'https://www.myschool.cl/ams_indexApp.php?uuid=1&ID=2&modo=exit';
+  final String homeUrl = 'https://www.myschool.cl/ams_home.php?usr='; // Ajustar con la lógica del usuario
+  bool _isLoading = true;
 
-//   @override
-//   void initState() {
-//     super.initState();
-//     _controllerFuture = _initializeWebView();
-//   }
-// Future<void> _setAllCookies() async {
-//   final SharedPreferences prefs = await SharedPreferences.getInstance();
-//   final sessionId = prefs.getString('session_id') ?? '';
-//   final otherCookieValue = prefs.getString('other_cookie') ?? '';
+  @override
+  void initState() {
+    super.initState();
+    _cookieManager = CookieManager.instance();
+    context.read<NotificationsCubit>().fetchToken(); // Solicitar token de notificación
+    _checkSession();
+  }
 
-//   List<WebViewCookie> cookies = [
-//     WebViewCookie(
-//       name: 'PHPSESSID',
-//       value: sessionId,
-//       domain: 'myschool.cl',
-//       path: '/',
-//     ),
-//     WebViewCookie(
-//       name: 'OtherCookie',
-//       value: otherCookieValue,
-//       domain: 'myschool.cl',
-//       path: '/',
-//     ),
-//     // Agrega aquí todas las cookies que necesites
-//   ];
+  Future<void> _checkSession() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? sessionId = prefs.getString('session_id');
 
-//   final cookieManager = WebViewCookieManager();
-//   for (var cookie in cookies) {
-//     await cookieManager.setCookie(cookie);
-//   }
-// }
-//   Future<WebViewController> _initializeWebView() async {
-//     if (Platform.isAndroid) {
-//       // Inicializa WebView
-//       // WebView.platform = SurfaceAndroidWebView();
-//     }
+    if (sessionId != null && sessionId.isNotEmpty) {
+      await _cookieManager.setCookie(
+        url: Uri.parse(loginUrl),
+        name: "PHPSESSID",
+        value: sessionId,
+        domain: "www.myschool.cl",
+        path: "/",
+      );
 
-//     final SharedPreferences prefs = await SharedPreferences.getInstance();
-//     final token = prefs.getString('fcm_token') ?? 'default_token';
-//     final sessionId = prefs.getString('session_id') ?? '';
-    
-//     loginUrl = 'https://www.myschool.cl/ams_indexApp.php?uuid=$sessionId&ID=$token';
-//     print('Login URL: $loginUrl');
+      _webViewController.loadUrl(
+        urlRequest: URLRequest(url: Uri.parse(homeUrl + '')), // Ajustar con el ID del usuario actual
+      );
+    }
+  }
 
-//     final controller = WebViewController()
-//       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-//       ..setNavigationDelegate(NavigationDelegate(
-//         onProgress: (int progress) {
-//           setState(() {
-//             _isLoading = progress < 100;
-//           });
-//         },
-//         onPageFinished: (String url) async {
-//           if (url.contains("ams_home.php")) {
-//             await _saveAllCookies();
-//           }
-//           setState(() {
-//             _isLoading = false;
-//           });
-//         },
-//       ));
+  Future<void> _saveSessionCookie() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<Cookie> cookies = await _cookieManager.getCookies(url: Uri.parse("https://www.myschool.cl"));
 
-//     // Establece la cookie de sesión si existe
-//     if (sessionId.isNotEmpty) {
-//   await _setAllCookies();
-//       controller.loadRequest(Uri.parse('$homeUrl'));
-//     } else {
-//       controller.loadRequest(Uri.parse(loginUrl));
-//     }
+    for (var cookie in cookies) {
+      if (cookie.name == "PHPSESSID") {
+        await prefs.setString('session_id', cookie.value);
+        print("Cookie PHPSESSID guardada: ${cookie.value}");
+        break;
+      }
+    }
+  }
 
-//     return controller;
-//   }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: BlocBuilder<NotificationsCubit, NotificationsState>(
+          builder: (context, state) {
+            if (state is NotificationsLoaded) {
+              return Stack(
+                children: [
+                  InAppWebView(
+                    initialUrlRequest: URLRequest(url: Uri.parse(state.loginUrl)),
+                    onWebViewCreated: (controller) {
+                      _webViewController = controller;
+                    },
+                    onLoadStart: (controller, url) {
+                      setState(() {
+                        _isLoading = true;
+                      });
+                    },
+                    onLoadStop: (controller, url) async {
+                      if (url.toString().contains("ams_home.php")) {
+                        await _saveSessionCookie();
+                      }
+                      setState(() {
+                        _isLoading = false;
+                      });
+                    },
+                    onLoadError: (controller, url, code, message) {
+                      print("Error de carga: $message");
+                    },
+                  ),
+                  if (_isLoading)
+                    Positioned.fill(
+                      child: Container(
+                        color: Colors.black.withOpacity(0.7),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/logoMS.png',
+                              width: 100,
+                              height: 100,
+                            ),
+                            const SizedBox(height: 20),
+                            const CircularProgressIndicator(),
+                            const SizedBox(height: 20),
+                            const Text(
+                              'Cargando...',
+                              style: TextStyle(fontSize: 18, color: Colors.white),
 
-//   Future<void> _setSessionCookie(String sessionId) async {
-//     WebViewCookie cookie = WebViewCookie(
-//       name: 'PHPSESSID',
-//       value: sessionId,
-//       domain: 'myschool.cl',
-//       path: '/',
-   
-//     );
-//     await WebViewCookieManager().setCookie(cookie);
-//   }
-
-//   Future<void> _saveAllCookies() async {
-//     final controller = await _controllerFuture;
-//     String cookiesString = await controller!.runJavaScriptReturningResult('document.cookie') as String;
-
-//     List<String> cookiesList = cookiesString.split(';');
-//     final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-//     for (var cookie in cookiesList) {
-//       List<String> cookieParts = cookie.split('=');
-//       if (cookieParts.length >= 2) {
-//         String name = cookieParts[0].trim();
-//         String value = cookieParts[1].trim();
-//         await prefs.setString(name, value);
-//         print("Cookie $name guardada: $value");
-//       }
-//     }
-//   }
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: SafeArea(
-//         child: FutureBuilder<WebViewController>(
-//           future: _controllerFuture,
-//           builder: (context, snapshot) {
-//             if (snapshot.connectionState == ConnectionState.waiting) {
-//               return Center(child: CircularProgressIndicator());
-//             } else if (snapshot.hasError) {
-//               return Center(child: Text('Error al cargar el WebView'));
-//             } else {
-//               final controller = snapshot.data;
-//               return Stack(
-//                 children: [
-//                   WebViewWidget(controller: controller!),
-//                   if (_isLoading)
-//                     Container(
-//                       color: Colors.black.withOpacity(0.7),
-//                       child: Center(
-//                         child: CircularProgressIndicator(color: Colors.white),
-//                       ),
-//                     ),
-//                 ],
-//               );
-//             }
-//           },
-//         ),
-//       ),
-//       bottomNavigationBar: BottomNavigationBar(
-//         items: const [
-//           BottomNavigationBarItem(
-//             icon: Icon(Icons.logout),
-//             label: 'Cerrar sesión',
-//           ),
-//           BottomNavigationBarItem(
-//             icon: Icon(Icons.arrow_back),
-//             label: 'Retroceder',
-//           ),
-//         ],
-//         onTap: (index) async {
-//           final controller = await _controllerFuture;
-//           if (index == 0) {
-//             controller!.loadRequest(Uri.parse(loginUrl));
-//           } else if (index == 1) {
-//             controller!.goBack();
-//           }
-//         },
-//       ),
-//     );
-//   }
-// }
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                ],
+              );
+            } else if (state is NotificationsError) {
+              return Center(child: Text('Error: ${state.message}'));
+            } else {
+              return const Center(child: Text('No se pudo obtener la URL'));
+            }
+          },
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.logout),
+            label: 'Cerrar sesión',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.arrow_back),
+            label: 'Retroceder',
+          ),
+        ],
+        onTap: (index) {
+          if (index == 0) {
+            _webViewController.loadUrl(urlRequest: URLRequest(url: Uri.parse(loginUrl)));
+          } else if (index == 1) {
+            _webViewController.goBack();
+          }
+        },
+      ),
+    );
+  }
+}
